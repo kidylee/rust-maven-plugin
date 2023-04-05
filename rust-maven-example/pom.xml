@@ -72,7 +72,7 @@
                 Placing it there will have Maven automatically bundle the compiled code in the Jar.
             -->
             <plugin>
-                <groupId>org.questdb</groupId>
+                <groupId>com.github.kidylee.rust-maven-plugin</groupId>
                 <artifactId>rust-maven-plugin</artifactId>
                 <version>${project.version}</version>
                 <executions>

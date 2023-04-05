@@ -26,7 +26,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <version>1.0.1-SNAPSHOT</version>
-    <groupId>org.questdb</groupId>
+    <groupId>com.github.kidylee.rust-maven-plugin</groupId>
     <artifactId>rust-maven</artifactId>
     <packaging>pom</packaging>
     <name>Rust Maven</name>
