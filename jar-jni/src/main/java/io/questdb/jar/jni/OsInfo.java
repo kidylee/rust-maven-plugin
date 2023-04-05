@@ -24,6 +24,8 @@
 
 package io.questdb.jar.jni;
 
+import java.util.Locale;
+
 /**
  * Information about the current operating system.
  */
@@ -55,7 +57,7 @@ public abstract class OsInfo {
             osName = "windows";  // Too many flavours, binaries are compatible.
         }
         final String osArch = System.getProperty("os.arch").toLowerCase();
-        PLATFORM = (osName + "-" + osArch).replace(' ', '_');
+        PLATFORM = (Os.getCurrent().universalName() + "-" + osArch).replace(' ', '_');
 
         LIB_PREFIX = osName.startsWith("windows") ? "" : "lib";
 
@@ -66,5 +68,74 @@ public abstract class OsInfo {
         EXE_SUFFIX = osName.startsWith("windows")
                 ? ".exe" : "";
     }
+
+    private enum Os {
+        MAC_OS("mac", "darwin") {
+            @Override
+            public String universalName() {
+                return "darwin";
+            }
+        },
+        WINDOWS("win") {
+            @Override
+            public String universalName() {
+                if (currentIs64Bit()) {
+                    return "win32-x86-64";
+                } else {
+                    return "win32-x86";
+                }
+            }
+        },
+        GNU_SLASH_LINUX("nux") {
+            @Override
+            public String universalName() {
+                if (currentIs64Bit()) {
+                    return "linux-x86-64";
+                } else {
+                    return "linux-x86";
+                }
+            }
+        },
+        UNKNOWN() {
+            @Override
+            public String universalName()  {
+                throw new RuntimeException("Unknown platform. Can't tell what platform we're running on!");
+            }
+        };
+        private final String[] substrings;
+
+        private Os(String... substrings) {
+            this.substrings = substrings;
+        }
+
+        public abstract String universalName();
+
+        public static Os getCurrent() {
+            for (Os os : values()) {
+                if (os.isCurrent()) {
+                    return os;
+                }
+            }
+            return UNKNOWN;
+        }
+
+        public boolean isCurrent() {
+            for (String substring : substrings) {
+                if (currentOsString().contains(substring)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean currentIs64Bit() {
+            return System.getProperty("os.arch").contains("64");
+        }
+
+        private static String currentOsString() {
+            return System.getProperty("os.name", "unknown").toLowerCase(Locale.ENGLISH);
+        }
+    }
+
 }
 
